@@ -124,14 +124,19 @@
                     clone.querySelector('.support-section').style.display = 'none';
                 }
 
-                // Bild-Pfad Logik (YYYY_MM_DD_Artist.jpg)
-                const dParts = k['Datum'].split('.');
-                const isoDate = `${dParts[2]}_${dParts[1]}_${dParts[0]}`;
-                const artistClean = k['Band'].replace(/\s+/g, '_');
-                
-                const img = clone.querySelector('.rewind-bild');
-                img.src = `./tickets/${isoDate}_${artistClean}.jpg`;
-               // img.onerror = function() { this.style.display = 'none'; };
+				// Bild-Pfad Logik (NUR NOCH YYYY_MM_DD.jpg)
+				const dParts = k['Datum'].split('.');
+				const isoDate = `${dParts[2]}_${dParts[1]}_${dParts[0]}`;
+
+				const img = clone.querySelector('.rewind-bild');
+
+				// Pfad wird jetzt nur aus dem Datum zusammengebaut
+				img.src = `./tickets/${isoDate}.jpg`;
+
+				// Falls kein Bild existiert, verstecken wir das <img> Element
+				img.onerror = function() { 
+				//	this.style.display = 'none'; 
+				};
 
                 container.appendChild(clone);
             });
