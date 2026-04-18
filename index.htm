@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Konzert Rewind</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        /* --- DEIN STYLE-BEREICH --- */
+        body { 
+            font-family: 'Trebuchet MS'; 
+            background: #E63946;
+            background-attachment: fixed;
+            color: #000000; 
+            padding: 40px; 
+            
+        }
+      
+        #today{
+            font-size: 25px;
+            font-family: 'Trebuchet MS'; 
+            font-weight: bold;
+            color: #000000; 
+            padding: 5px; 
+        
+        
+       }
+
+        .rewind-entry { 
+            background:#ffffff;
+            margin-bottom: 10px; 
+            border: 1px solid #000;
+            border-radius:8px;
+            padding: 7px;
+            max-width: 600px;
+            line-height: 1.4;
+            font-family: 'Trebuchet MS';
+            font-size: 18px;
+        }
+
+        /* Hier kannst du die Variablen einzeln stylen */
+        .highlight-years  { font-weight: bold; color: #000;  }
+        .highlight-date   { color: #000; font-weight: bold; text-decoration: underline;}
+        .highlight-artist { font-size: 22px; color: #000; font-weight: bold;}
+        .highlight-support { color: #000; font-style: italic; }
+        .highlight-location { color: #000; }
+
+        .ticket-photo { 
+            display: block; 
+            margin-top: 20px; 
+            max-width: 100%; 
+            min-height:100px;
+            border: 1px solid #444; 
+            filter: grayscale(50%);
+            transition: 0.3s;
+        }
+       /* .ticket-photo:hover { filter: grayscale(0%); border-color: #00ff41; } */
+
+        .meta-text { color: #555; font-size: 0.9rem; margin-top: 10px; }
+        
+        #rewind-template { display: none; }
+    </style>
+</head>
+<body>
+	<div id="today">Heute vor...</div>
+    <div id="output-container"></div>
+    <div id="rewind-template">
+        <div class="rewind-entry">
+            
+            <div>
+                ... <span class="rewind-jahre highlight-years"></span> Jahren, 
+                am <span class="rewind-datum highlight-date"></span> 
+                war ich hier: <span class="rewind-location highlight-location"></span>, 
+                <span class="rewind-ort highlight-location"></span>
+                <br> bei:  <span class="rewind-artist highlight-artist"></span>
+            </div>
+
+            <div class="support-section">
+                Mit dabei: <span class="rewind-support highlight-support"></span>
+            </div>
+          
+            <img class="rewind-bild ticket-photo" src="" alt="Ticket">
+
+        </div>
+    </div>
+
+    <script>
+        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTYqAc4IUyjB4Uk4_YtAFl0cHgoSnfSnPkMMBFo5COW32YyI78wNfku0nwF9irW1ZQp8_WTNKITvZBk/pub?gid=2104547759&single=true&output=csv';
+
+        function init() {
+            Papa.parse(csvUrl, {
+                download: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    const rawRows = results.data;
+                    const headerIndex = rawRows.findIndex(row => row.join().includes("Datum"));
+                    if (headerIndex === -1) return;
+                    const data = Papa.parse(Papa.unparse(rawRows.slice(headerIndex)), { header: true }).data;
+                    render(data.filter(k => k.Band && k.Band.trim() !== ""));
+                }
+            });
+        }
+
+        function render(konzerte) {
+            const container = document.getElementById('output-container');
+            const template = document.querySelector('#rewind-template .rewind-entry');
+
+            konzerte.forEach(k => {
+                const clone = template.cloneNode(true);
+
+                // Daten einfüllen
+                clone.querySelector('.rewind-jahre').textContent  = k['Vor Jahren'];
+                clone.querySelector('.rewind-datum').textContent  = k['Datum'];
+                clone.querySelector('.rewind-artist').textContent = k['Band'];
+                clone.querySelector('.rewind-location').textContent = k['Location'];
+                clone.querySelector('.rewind-ort').textContent = k['Ort'];
+
+                // Support Logik
+                const s = [k['Support 1'], k['Support 2'], k['Support 3'], k['Support 4'], k['Support 5'], k['Support 6'], k['Support 7']]
+                          .filter(x => x && x.trim() !== "" && x !== "Link");
+                
+                if(s.length > 0) {
+                    clone.querySelector('.rewind-support').textContent = s.join(' & ');
+                } else {
+                    clone.querySelector('.support-section').style.display = 'none';
+                }
+
+                // Bild-Pfad Logik (YYYY_MM_DD_Artist.jpg)
+                const dParts = k['Datum'].split('.');
+                const isoDate = `${dParts[2]}_${dParts[1]}_${dParts[0]}`;
+                const artistClean = k['Band'].replace(/\s+/g, '_');
+                
+                const img = clone.querySelector('.rewind-bild');
+                img.src = `./tickets/${isoDate}_${artistClean}.jpg`;
+               // img.onerror = function() { this.style.display = 'none'; };
+
+                container.appendChild(clone);
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>
