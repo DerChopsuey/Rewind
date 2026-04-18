@@ -6,12 +6,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
         /* --- DEIN STYLE-BEREICH --- */
+
+
         body { 
             font-family: 'Trebuchet MS'; 
             background: #E63946;
             background-attachment: fixed;
             color: #000000; 
-            padding: 40px; 
+            margin: 0;
+            padding: 25px; /* Kleiner Puffer zum Bildschirmrand am Handy */
+    
+            /* Zentrierung des Inhalts */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             
         }
       
@@ -20,10 +28,12 @@
             font-family: 'Trebuchet MS'; 
             font-weight: bold;
             color: #000000; 
-            padding: 5px; 
-        
-        
+            padding: 7px; 
+            width:100%;
+            max-width: 600px;
+            border: 0px solid #000000;
        }
+      
 
         .rewind-entry { 
             background:#ffffff;
@@ -31,10 +41,13 @@
             border: 1px solid #000;
             border-radius:8px;
             padding: 7px;
-            max-width: 600px;
             line-height: 1.4;
             font-family: 'Trebuchet MS';
             font-size: 18px;
+    
+            /* Smartphone-Magie: */
+            width: 100%; 
+            max-width: 600px; 
         }
 
         /* Hier kannst du die Variablen einzeln stylen */
@@ -47,11 +60,10 @@
         .ticket-photo { 
             display: block; 
             margin-top: 20px; 
-            max-width: 100%; 
+            width: 100%; 
             min-height:100px;
+            height: auto;
             border: 1px solid #444; 
-            filter: grayscale(50%);
-            transition: 0.3s;
         }
        /* .ticket-photo:hover { filter: grayscale(0%); border-color: #00ff41; } */
 
@@ -61,8 +73,8 @@
     </style>
 </head>
 <body>
-	<div id="today">Heute vor...</div>
-    <div id="output-container"></div>
+	
+    <div id="output-container"><div id="today">Heute vor...</div></div>
     <div id="rewind-template">
         <div class="rewind-entry">
             
