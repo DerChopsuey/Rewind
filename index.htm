@@ -135,7 +135,7 @@
 
 				// Falls kein Bild existiert, verstecken wir das <img> Element
 				img.onerror = function() { 
-				//	this.style.display = 'none'; 
+				this.src = './tickets/leer.jpg';
 				};
 
                 container.appendChild(clone);
