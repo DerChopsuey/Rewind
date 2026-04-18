@@ -23,6 +23,14 @@
             
         }
       
+        #output-container {
+        width: 100%;           /* Nutzt den Platz, den der Body lässt */
+        max-width: 800px;      /* HIER stellst du die endgültige Breite ein */
+        display: flex;
+        flex-direction: column;
+        align-items: center;   /* Zentriert Today und Entries im Container */
+       }
+      
         #today{
             font-size: 25px;
             font-family: 'Trebuchet MS'; 
@@ -30,7 +38,7 @@
             color: #000000; 
             padding: 7px; 
             width:100%;
-            max-width: 600px;
+            max-width: 1600px;
             border: 0px solid #000000;
        }
       
@@ -47,7 +55,7 @@
     
             /* Smartphone-Magie: */
             width: 100%; 
-            max-width: 600px; 
+            max-width: 1600px; 
         }
 
         /* Hier kannst du die Variablen einzeln stylen */
