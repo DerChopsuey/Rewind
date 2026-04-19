@@ -76,16 +76,36 @@
         .highlight-location {  }
         .highlight-id {font-size:17px; color:#696969; font-style: italic; display: block; text-align:right;}
 
-        .ticket-photo { 
-            display: block; 
-            margin-top: 20px; 
-            width: 100%; 
-            min-height:100px;
-            height: auto;
-            border: 1px solid #444; 
-            margin-bottom:5px;
-            transform: rotate(-90deg);
-        }
+		/* 1. Der Container für das Bild */
+		.photo-wrapper {
+		    width: 100%;
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		    /* Hier ist der Trick: Wir berechnen die Höhe basierend auf der Breite */
+		    /* Da das Ticket gedreht wird, ist die Anzeige-Höhe = Original-Breite */
+		    overflow: hidden; 
+		    margin-top: 20px;
+		}
+		
+		/* 2. Das Bild selbst */
+		.ticket-photo {
+		    display: block;
+		    /* Wir nutzen 'width', aber durch die Drehung wird das zur Anzeige-Höhe */
+		    /* Damit es die volle Breite ausfüllt, nutzen wir einen Trick mit 'inline-size' oder festen Werten */
+		    width: auto;
+		    height: 100vw; /* Das Bild ist so breit wie der Viewport */
+		    max-height: 1800px; /* Aber maximal so breit wie dein Container */
+		    
+		    transform: rotate(-90deg);
+		    
+		    /* WICHTIG: Damit der Platzbedarf neu berechnet wird */
+		    transform-origin: center;
+		    object-fit: contain;
+		    border: 1px solid #444;
+		}
+
+		
        /* .ticket-photo:hover { filter: grayscale(0%); border-color: #00ff41; } */
 
         .meta-text { color: #555; font-size: 0.9rem; margin-top: 10px; }
