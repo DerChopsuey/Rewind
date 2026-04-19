@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Konzert Rewind</title>
+    <link rel="icon" type="image/png" href="./favicon.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        /* --- DEIN STYLE-BEREICH --- */
+     
 
 
         body { 
@@ -23,11 +24,11 @@
         }
       
         #output-container {
-            width: 100%;           /* Nutzt den Platz, den der Body lässt */
-            max-width: 1800px;      /* HIER stellst du die endgültige Breite ein */
+            width: 100%;           
+            max-width: 1800px;      /*endgültige Breite */
             display: flex;
             flex-direction: column;
-            align-items: center;   /* Zentriert Today und Entries im Container */
+            align-items: center;   
        }
       
         #today{
@@ -58,13 +59,13 @@
             max-width: 1800px; 
         }
 
-        /* Hier kannst du die Variablen einzeln stylen */
+        
         .highlight-years  { font-weight: bold; color: #000;  }
         .highlight-date   { color: #000; font-weight: bold; text-decoration: underline;}
         .highlight-artist { font-size: 40px; color: #000; font-weight: bold;}
         .highlight-support { color: #000; font-style: italic; }
         .highlight-location { color: #000; }
-        .highlight-id {font-size:15px; color:#696969; font-style: italic; display: block; text-align:right;}
+        .highlight-id {font-size:17px; color:#696969; font-style: italic; display: block; text-align:right;}
 
         .ticket-photo { 
             display: block; 
@@ -73,6 +74,7 @@
             min-height:100px;
             height: auto;
             border: 1px solid #444; 
+            margin-bottom:5px;
         }
        /* .ticket-photo:hover { filter: grayscale(0%); border-color: #00ff41; } */
 
@@ -89,7 +91,8 @@
      </div>
     <div id="rewind-template">
         <div class="rewind-entry">
-            
+          
+                
             <div>
                 ... <span class="rewind-jahre highlight-years"></span> Jahren, 
                 am <span class="rewind-datum highlight-date"></span> 
@@ -103,7 +106,7 @@
             </div>
           
             <img class="rewind-bild ticket-photo" src="" alt="Ticket">
-            <span class="rewind-id highlight-id"></span>
+            <span class="rewind-id highlight-id" onclick="this.parentElement.style.display='none'"></span>
         </div>
     </div>
 
@@ -138,7 +141,7 @@ function render(konzerte) {
             <div style="color: white; font-style: italic; padding: 20px; text-align: center;">
                 An diesen Datum hat für mich bislang noch kein Konzert stattgefunden. :-(
             </div>`;
-        return; // Hier abbrechen, damit der Rest nicht ausgeführt wird
+        return; 
     }
 
     // 2. Wenn nicht leer: Normales Befüllen
