@@ -76,33 +76,23 @@
         .highlight-location {  }
         .highlight-id {font-size:17px; color:#696969; font-style: italic; display: block; text-align:right;}
 
-		/* 1. Der Container für das Bild */
 		.photo-wrapper {
 		    width: 100%;
+		    overflow: hidden;
 		    display: flex;
 		    justify-content: center;
 		    align-items: center;
-		    /* Hier ist der Trick: Wir berechnen die Höhe basierend auf der Breite */
-		    /* Da das Ticket gedreht wird, ist die Anzeige-Höhe = Original-Breite */
-		    overflow: hidden; 
+		    background: #ebebeb; /* Optional: Platzhalterfarbe */
 		    margin-top: 20px;
+		    border-radius: 12px;
 		}
 		
-		/* 2. Das Bild selbst */
 		.ticket-photo {
+		    /* Wichtig: Breite auf 100% der Box beziehen */
+		    width: 100%; 
+		    height: auto;
 		    display: block;
-		    /* Wir nutzen 'width', aber durch die Drehung wird das zur Anzeige-Höhe */
-		    /* Damit es die volle Breite ausfüllt, nutzen wir einen Trick mit 'inline-size' oder festen Werten */
-		    width: auto;
-		    height: 100vw; /* Das Bild ist so breit wie der Viewport */
-		    max-height: 1800px; /* Aber maximal so breit wie dein Container */
-		    
-		    transform: rotate(-90deg);
-		    
-		    /* WICHTIG: Damit der Platzbedarf neu berechnet wird */
-		    transform-origin: center;
-		    object-fit: contain;
-		    border: 1px solid #444;
+		    transform-origin: center center;
 		}
 
 		
@@ -198,15 +188,36 @@ function render(konzerte) {
             clone.querySelector('.support-section').style.display = 'none';
         }
 
-        // Bild-Pfad Logik
-        const dParts = k['Datum'].split('.');
-        const isoDate = `${dParts[2]}_${dParts[1]}_${dParts[0]}`;
-        const img = clone.querySelector('.rewind-bild');
-
-        img.src = `./tickets/${isoDate}.jpg`;
-        img.onerror = function() { 
-            this.src = './tickets/leer.jpg';
-        };
+		// Bild-Pfad Logik
+		const dParts = k['Datum'].split('.');
+		const isoDate = `${dParts[2]}_${dParts[1]}_${dParts[0]}`;
+		const img = clone.querySelector('.rewind-bild');
+		const wrapper = clone.querySelector('.photo-wrapper');
+		
+		img.src = `./tickets/${isoDate}.jpg`;
+		
+		img.onload = function() {
+		    // Da wir das Bild um 90 Grad drehen, wird die ursprüngliche HÖHE zur neuen BREITE.
+		    // Wir wollen aber, dass die BREITE nach der Drehung 100% des Containers ist.
+		    
+		    const originalWidth = img.naturalWidth;
+		    const originalHeight = img.naturalHeight;
+		    const ratio = originalWidth / originalHeight;
+		
+		    // Wir drehen es und skalieren es so, dass es perfekt in die Breite passt
+		    // Das 'scale' sorgt dafür, dass keine Ränder entstehen
+		    img.style.transform = `rotate(-90deg) scale(${1/ratio})`;
+		    
+		    // Jetzt der wichtigste Teil: Wir berechnen die Höhe des Containers neu,
+		    // damit kein leerer Platz über/unter dem gedrehten Bild bleibt.
+		    const containerWidth = wrapper.offsetWidth;
+		    wrapper.style.height = (containerWidth * ratio) + "px";
+		};
+		
+		img.onerror = function() { 
+		    this.src = './tickets/leer.jpg';
+		    wrapper.style.display = 'none'; // Wenn kein Bild da, Wrapper weg
+		};
 
         container.appendChild(clone);
     });
