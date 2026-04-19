@@ -78,21 +78,21 @@
 
 		.photo-wrapper {
 		    width: 100%;
-		    overflow: hidden;
+		    position: relative;
+		    overflow: hidden; /* Wichtig! */
 		    display: flex;
 		    justify-content: center;
 		    align-items: center;
-		    background: #ebebeb; /* Optional: Platzhalterfarbe */
 		    margin-top: 20px;
 		    border-radius: 12px;
+		    background: #f0f0f0;
 		}
 		
 		.ticket-photo {
-		    /* Wichtig: Breite auf 100% der Box beziehen */
-		    width: 100%; 
-		    height: auto;
 		    display: block;
-		    transform-origin: center center;
+		    position: absolute; /* Wir positionieren es absolut, um es frei zu drehen */
+		    transform: rotate(-90deg);
+		    object-fit: contain; /* Sorgt dafür, dass das ganze Bild sichtbar bleibt */
 		}
 
 		
@@ -197,21 +197,27 @@ function render(konzerte) {
 		img.src = `./tickets/${isoDate}.jpg`;
 		
 		img.onload = function() {
-		    // Da wir das Bild um 90 Grad drehen, wird die ursprüngliche HÖHE zur neuen BREITE.
-		    // Wir wollen aber, dass die BREITE nach der Drehung 100% des Containers ist.
-		    
-		    const originalWidth = img.naturalWidth;
-		    const originalHeight = img.naturalHeight;
-		    const ratio = originalWidth / originalHeight;
-		
-		    // Wir drehen es und skalieren es so, dass es perfekt in die Breite passt
-		    // Das 'scale' sorgt dafür, dass keine Ränder entstehen
-		    img.style.transform = `rotate(-90deg) scale(${1/ratio})`;
-		    
-		    // Jetzt der wichtigste Teil: Wir berechnen die Höhe des Containers neu,
-		    // damit kein leerer Platz über/unter dem gedrehten Bild bleibt.
 		    const containerWidth = wrapper.offsetWidth;
-		    wrapper.style.height = (containerWidth * ratio) + "px";
+		    
+		    // Die echten Maße des Bildes
+		    const natW = img.naturalWidth;
+		    const natH = img.naturalHeight;
+		    
+		    // Da wir um 90 Grad drehen, wird die alte Höhe die neue Breite.
+		    // Wir wollen, dass die neue Breite = containerWidth ist.
+		    // Also rechnen wir aus, wie stark wir das Bild verkleinern müssen:
+		    const scaleFactor = containerWidth / natH;
+		    
+		    // Neue Maße berechnen
+		    const newDisplayWidth = natW * scaleFactor;
+		    const newDisplayHeight = natH * scaleFactor;
+		
+		    // Jetzt setzen wir die Maße so, dass das Bild nach der Drehung perfekt passt
+		    img.style.width = newDisplayHeight + "px"; // Das wird die neue Breite
+		    img.style.height = newDisplayWidth + "px"; // Das wird die neue Höhe
+		    
+		    // Den Wrapper genau auf die richtige Höhe setzen, damit kein Platz verschwendet wird
+		    wrapper.style.height = newDisplayWidth + "px";
 		};
 		
 		img.onerror = function() { 
