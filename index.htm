@@ -64,6 +64,7 @@
         .highlight-artist { font-size: 40px; color: #000; font-weight: bold;}
         .highlight-support { color: #000; font-style: italic; }
         .highlight-location { color: #000; }
+        .highlight-id {font-size:15px; color:#696969; font-style: italic; display: block; text-align:right;}
 
         .ticket-photo { 
             display: block; 
@@ -82,7 +83,10 @@
 </head>
 <body>
 	
-    <div id="output-container"><div id="today">Heute vor...</div></div>
+    <div id="output-container">
+      <div id="today">Heute vor...</div>
+      <div id="no-concert"></div>
+     </div>
     <div id="rewind-template">
         <div class="rewind-entry">
             
@@ -99,7 +103,7 @@
             </div>
           
             <img class="rewind-bild ticket-photo" src="" alt="Ticket">
-
+            <span class="rewind-id highlight-id"></span>
         </div>
     </div>
 
@@ -120,47 +124,58 @@
             });
         }
 
-        function render(konzerte) {
-            const container = document.getElementById('output-container');
-            const template = document.querySelector('#rewind-template .rewind-entry');
+function render(konzerte) {
+    const container = document.getElementById('output-container');
+    const template = document.querySelector('#rewind-template .rewind-entry');
+    const todayHeader = document.getElementById('today');
 
-            konzerte.forEach(k => {
-                const clone = template.cloneNode(true);
+    // 1. Die Bedingung: Ist die Liste leer?
+    if (konzerte.length === 0) {
+        todayHeader.textContent = "Keine Konzerte heute"; // Optional: Überschrift anpassen
+        
+        // Alternativ-Text in den Container packen
+        container.innerHTML += `
+            <div style="color: white; font-style: italic; padding: 20px; text-align: center;">
+                An diesen Datum hat für mich bislang noch kein Konzert stattgefunden. :-(
+            </div>`;
+        return; // Hier abbrechen, damit der Rest nicht ausgeführt wird
+    }
 
-                // Daten einfüllen
-                clone.querySelector('.rewind-jahre').textContent  = k['Vor Jahren'];
-                clone.querySelector('.rewind-datum').textContent  = k['Datum'];
-                clone.querySelector('.rewind-artist').textContent = k['Band'];
-                clone.querySelector('.rewind-location').textContent = k['Location'];
-                clone.querySelector('.rewind-ort').textContent = k['Ort'];
+    // 2. Wenn nicht leer: Normales Befüllen
+    konzerte.forEach(k => {
+        const clone = template.cloneNode(true);
+ 
+        // Daten einfüllen
+        clone.querySelector('.rewind-id').textContent = '#' + k['ID'];
+        clone.querySelector('.rewind-jahre').textContent  = k['Vor Jahren'];
+        clone.querySelector('.rewind-datum').textContent  = k['Datum'];
+        clone.querySelector('.rewind-artist').textContent = k['Band'];
+        clone.querySelector('.rewind-location').textContent = k['Location'];
+        clone.querySelector('.rewind-ort').textContent = k['Ort'];
 
-                // Support Logik
-                const s = [k['Support 1'], k['Support 2'], k['Support 3'], k['Support 4'], k['Support 5'], k['Support 6'], k['Support 7']]
-                          .filter(x => x && x.trim() !== "" && x !== "Link");
-                
-                if(s.length > 0) {
-                    clone.querySelector('.rewind-support').textContent = s.join(' & ');
-                } else {
-                    clone.querySelector('.support-section').style.display = 'none';
-                }
-
-				// Bild-Pfad Logik (NUR NOCH YYYY_MM_DD.jpg)
-				const dParts = k['Datum'].split('.');
-				const isoDate = `${dParts[2]}_${dParts[1]}_${dParts[0]}`;
-
-				const img = clone.querySelector('.rewind-bild');
-
-				// Pfad wird jetzt nur aus dem Datum zusammengebaut
-				img.src = `./tickets/${isoDate}.jpg`;
-
-				// Falls kein Bild existiert, verstecken wir das <img> Element
-				img.onerror = function() { 
-				this.src = './tickets/leer.jpg';
-				};
-
-                container.appendChild(clone);
-            });
+        // Support Logik
+        const s = [k['Support 1'], k['Support 2'], k['Support 3'], k['Support 4'], k['Support 5'], k['Support 6'], k['Support 7']]
+                  .filter(x => x && x.trim() !== "" && x !== "Link");
+        
+        if(s.length > 0) {
+            clone.querySelector('.rewind-support').textContent = s.join(' & ');
+        } else {
+            clone.querySelector('.support-section').style.display = 'none';
         }
+
+        // Bild-Pfad Logik
+        const dParts = k['Datum'].split('.');
+        const isoDate = `${dParts[2]}_${dParts[1]}_${dParts[0]}`;
+        const img = clone.querySelector('.rewind-bild');
+
+        img.src = `./tickets/${isoDate}.jpg`;
+        img.onerror = function() { 
+            this.src = './tickets/leer.jpg';
+        };
+
+        container.appendChild(clone);
+    });
+}
 
         init();
     </script>
