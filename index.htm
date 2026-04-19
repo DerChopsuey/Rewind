@@ -199,25 +199,33 @@ function render(konzerte) {
 		img.onload = function() {
 		    const containerWidth = wrapper.offsetWidth;
 		    
-		    // Die echten Maße des Bildes
+		    // Die echten Maße des Bildes (Original)
 		    const natW = img.naturalWidth;
 		    const natH = img.naturalHeight;
 		    
-		    // Da wir um 90 Grad drehen, wird die alte Höhe die neue Breite.
-		    // Wir wollen, dass die neue Breite = containerWidth ist.
-		    // Also rechnen wir aus, wie stark wir das Bild verkleinern müssen:
-		    const scaleFactor = containerWidth / natH;
-		    
-		    // Neue Maße berechnen
-		    const newDisplayWidth = natW * scaleFactor;
-		    const newDisplayHeight = natH * scaleFactor;
+		    // Wir wollen, dass die Höhe des Originalbildes (natH) 
+		    // nach der Drehung genau so breit ist wie der Container (containerWidth).
+		    const ratio = containerWidth / natH;
 		
-		    // Jetzt setzen wir die Maße so, dass das Bild nach der Drehung perfekt passt
-		    img.style.width = newDisplayHeight + "px"; // Das wird die neue Breite
-		    img.style.height = newDisplayWidth + "px"; // Das wird die neue Höhe
+		    // Wir berechnen die neuen Anzeige-Maße
+		    const displayWidth = natW * ratio;
+		    const displayHeight = natH * ratio;
+		
+		    // Jetzt setzen wir die Maße fest
+		    // Wichtig: Wir weisen dem Bild die Maße VOR der Drehung zu
+		    img.style.width = displayWidth + "px";
+		    img.style.height = displayHeight + "px";
 		    
-		    // Den Wrapper genau auf die richtige Höhe setzen, damit kein Platz verschwendet wird
-		    wrapper.style.height = newDisplayWidth + "px";
+		    // Den Wrapper zwingen wir auf die Höhe, die das Bild nach der Drehung hat
+		    // (Also die ursprüngliche Breite skaliert mit dem Ratio)
+		    wrapper.style.height = displayWidth + "px";
+		
+		    // Falls das Bild innerhalb des Wrappers verrutscht, schieben wir es in die Mitte
+		    img.style.position = "absolute";
+		    img.style.top = "50%";
+		    img.style.left = "50%";
+		    // Drehen UND Zentrieren in einem Befehl
+		    img.style.transform = "translate(-50%, -50%) rotate(-90deg)";
 		};
 		
 		img.onerror = function() { 
