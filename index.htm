@@ -180,7 +180,7 @@
                   .filter(x => x && x.trim() !== "" && x !== "Link");
         
         if(s.length > 0) {
-            clone.querySelector('.rewind-support').textContent = s.join(' & ');
+            clone.querySelector('.rewind-support').textContent = s.join(', ');
         } else {
             clone.querySelector('.support-section').style.display = 'none';
         }
