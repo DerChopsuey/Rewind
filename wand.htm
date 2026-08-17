@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ticket-Wand</title>
+  <link rel="icon" type="image/png" href="./favicon.png">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #EF3C3C;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+	  padding-left: 110px; /* Abstand links */
+ 	  padding-right: 60px;  /* Abstand rechts */
+      overflow-x: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-weight: 300;
+    }
+
+    /* Das Container-Raster für die Tickets */
+    .ticket-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 20px;
+      /* Zieht die gesamten Reihen näher zusammen: */
+      row-gap: -60px; /* Abstand zwischen den Zeilen Vorher -20px */
+    }
+
+    .ticket-wrapper {
+      position: relative;
+      margin-left: -20px; /* Horizontale Überlappung */
+
+      /* HIER DIE VERTIKALE ÜBERLAPPUNG ANPASSEN: */
+      margin-top: -60px;    /* Vorher -15px */
+      margin-bottom: -60px; /* Vorher -15px */
+
+      transition: transform 0.25s ease, z-index 0.25s ease;
+      cursor: pointer;
+    }
+
+    /* Erstes Element in einer Reihe braucht keinen negativen linken Abstand */
+    .ticket-wrapper:first-child {
+      margin-left: 0;
+    }
+
+    .ticket-img {
+      /* Feste Höhe als Basis für gleichmäßige Ausrichtung */
+      height: 230px;
+      width: auto;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      display: block;
+      /* Sanfter Rand für den gedruckten Ticket-Look */
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+        /* Hover-Effekt: Beim Drüberfahren kommt das Ticket in den Vordergrund */
+        .ticket-wrapper:hover {
+          z-index: 9999 !important;
+          transform: scale(2.15) rotate(-90deg) !important;
+        }
+
+        #loading {
+          text-align: center;
+          font-size: 1.2rem;
+          color: #888;
+        }
+  </style>
+</head>
+<body>
+
+  <h1></h1>
+  <div id="loading">Tickets werden geladen...</div>
+  <div class="ticket-container" id="gallery"></div>
+
+  <script>
+    // GitHub API URL für deinen Ordner
+    const apiUrl = "https://api.github.com/repos/derchopsuey/Rewind/contents/tickets";
+    const rawBaseUrl = "https://derchopsuey.github.io/Rewind/tickets/";
+
+    // Regex zur Prüfung des Formats YYYY_MM_DD.jpg / png / webp
+    const datePattern = /^\d{4}_\d{2}_\d{2}\.(jpg|jpeg|png|webp)$/i;
+
+    async function loadTickets() {
+      const gallery = document.getElementById('gallery');
+      const loading = document.getElementById('loading');
+
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error(`Fehler beim Laden: ${response.statusText}`);
+        }
+
+        const files = await response.json();
+
+        // Nur Dateien filtern, die dem Datums-Format entsprechen
+        const ticketFiles = files.filter(file => datePattern.test(file.name));
+
+        // Sortieren nach Datum (ältestes zuerst)
+        ticketFiles.sort((a, b) => a.name.localeCompare(b.name));
+
+        loading.style.display = 'none';
+
+        if (ticketFiles.length === 0) {
+          gallery.innerHTML = '<p>Keine passenden Ticket-Dateien gefunden.</p>';
+          return;
+        }
+		let lastRotation = 0; // Merkt sich die Neigung der vorherigen Karte
+        ticketFiles.forEach((file, index) => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'ticket-wrapper';
+          
+          // Z-Index dynamisch erhöhen, damit spätere Bilder über den vorherigen liegen
+          wrapper.style.zIndex = index + 1;
+
+		let randomTilt;
+		let attempts = 0;
+
+		do {
+		  randomTilt = (Math.random() * 40) - 20;
+		  attempts++;
+		} while (Math.abs(randomTilt - lastRotation) < 10 && attempts < 10);
+
+		lastRotation = randomTilt;
+		const totalRotation = -90 + randomTilt;
+
+          wrapper.style.transform = `rotate(${totalRotation.toFixed(1)}deg)`;
+
+          const img = document.createElement('img');
+          img.src = `${rawBaseUrl}${file.name}`;
+          img.alt = `Konzertkarte ${file.name}`;
+          img.className = 'ticket-img';
+          img.loading = 'lazy'; // Performantes Laden bei vielen Bildern
+
+          wrapper.appendChild(img);
+          gallery.appendChild(wrapper);
+        });
+
+      } catch (error) {
+        console.error(error);
+        loading.innerText = 'Fehler beim Laden der Bilddateien. Stelle sicher, dass das Repository öffentlich ist.';
+      }
+    }
+
+    loadTickets();
+  </script>
+</body>
+</html>
