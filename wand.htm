@@ -10,21 +10,25 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --ticket-height: 230px;
+      --bg-color: #141D29;
+      --pad-top: 40px;
+      --pad-bottom: 0px;
+      --pad-left: 110px;
+      --pad-right: 60px;
+    }
+
     body {
-      background-color: #EF3C3C;
+      background-color: var(--bg-color);
       color: #ffffff;
       font-family: Arial, sans-serif;
       margin: 0;
-	  padding-top: 40px;
-	  padding-left: 110px; /* Abstand links */
- 	  padding-right: 80px;  /* Abstand rechts */
+      padding-top: var(--pad-top);
+      padding-bottom: var(--pad-bottom);
+      padding-left: var(--pad-left);
+      padding-right: var(--pad-right);
       overflow-x: hidden;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 40px;
-      font-weight: 300;
     }
 
     /* Das Container-Raster für die Tickets */
@@ -34,73 +38,496 @@
       justify-content: flex-start;
       align-items: center;
       padding: 20px;
-      /* Zieht die gesamten Reihen näher zusammen: */
-      row-gap: -60px; /* Abstand zwischen den Zeilen Vorher -20px */
+      row-gap: -60px;
     }
 
     .ticket-wrapper {
       position: relative;
-      margin-left: -20px; /* Horizontale Überlappung */
-
-      /* HIER DIE VERTIKALE ÜBERLAPPUNG ANPASSEN: */
-      margin-top: -60px;    /* Vorher -15px */
-      margin-bottom: -60px; /* Vorher -15px */
-
+      margin-left: -20px;
+      margin-top: -60px;
+      margin-bottom: -60px;
       transition: transform 0.25s ease, z-index 0.25s ease;
       cursor: pointer;
     }
 
-    /* Erstes Element in einer Reihe braucht keinen negativen linken Abstand */
     .ticket-wrapper:first-child {
       margin-left: 0;
     }
 
     .ticket-img {
-      /* Feste Höhe als Basis für gleichmäßige Ausrichtung */
-      height: var(--ticket-height, 230px);;
+      height: var(--ticket-height);
       width: auto;
       border-radius: 4px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
       display: block;
-      /* Sanfter Rand für den gedruckten Ticket-Look */
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      /*border: 1px solid rgba(255, 255, 255, 0.1);   -- Helle Rahmen, weiß noch nicht wie geil das ist*/
     }
 
-        /* Hover-Effekt: Beim Drüberfahren kommt das Ticket in den Vordergrund */
-        .ticket-wrapper:hover {
-          z-index: 9999 !important;
-          transform: scale(2.15) rotate(-90deg) !important;
-        }
+    .ticket-wrapper:hover {
+      z-index: 9999 !important;
+      transform: scale(2.15) rotate(-90deg) !important;
+    }
 
-        #loading {
-          text-align: center;
-          font-size: 1.2rem;
-          color: #888;
-        }
+    #loading {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #888;
+    }
+
+    /* Floating & Draggable Settings Panel */
+    #settings-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 99999;
+      background: rgba(18, 18, 18, 0.94);
+      color: #ffffff;
+      padding: 16px 20px;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(12px);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      width: 290px;
+      display: none; /* Standardmäßig unsichtbar */
+      user-select: none;
+    }
+
+    /* Header fürs Ziehen */
+    #settings-header {
+      margin: -16px -20px 12px -20px;
+      padding: 12px 20px 10px 20px;
+      cursor: move;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #settings-header h3 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #settings-panel .close-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #aaa;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    #settings-panel .close-btn:hover {
+      background: #EF3C3C;
+      color: #fff;
+    }
+
+    .setting-group {
+      margin-bottom: 10px;
+    }
+
+    .setting-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .setting-label-row label {
+      color: #bbb;
+      font-weight: 500;
+      font-size: 12px;
+    }
+
+    /* Inputs für Zahlen und Hexcode */
+    .num-input, .hex-input {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      color: #fff;
+      padding: 2px 6px;
+      font-size: 11px;
+      font-family: monospace;
+      text-align: right;
+      width: 60px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .hex-input {
+      width: 80px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .num-input:focus, .hex-input:focus {
+      border-color: #EF3C3C;
+    }
+
+    .color-picker-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .color-picker-row input[type="color"] {
+      -webkit-appearance: none;
+      border: none;
+      width: 30px;
+      height: 26px;
+      border-radius: 6px;
+      cursor: pointer;
+      background: transparent;
+    }
+
+    .color-picker-row input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    .color-picker-row input[type="color"]::-webkit-color-swatch {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+    }
+
+    /* Cleaned Slider-Design */
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      margin: 4px 0;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #EF3C3C;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(239, 60, 60, 0.5);
+      transition: transform 0.1s ease, background-color 0.2s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      background: #ff5555;
+    }
+
+    /* Action Buttons Style */
+    .btn-action {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-action:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: translateY(-1px);
+    }
+
+    .btn-action:active {
+      transform: translateY(1px);
+    }
+
+    #download-btn {
+      margin-top: 14px;
+      background: #EF3C3C;
+      border: none;
+      box-shadow: 0 4px 15px rgba(239, 60, 60, 0.4);
+    }
+
+    #download-btn:hover {
+      background: #ff4d4d;
+    }
   </style>
+  <!-- html2canvas Bibliothek einbinden -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
   <div id="loading">Tickets werden geladen...</div>
   <div class="ticket-container" id="gallery"></div>
 
-  <script>
-	  // Liest den Wert aus der URL aus (z.B. ?size=60)
-	const urlParams = new URLSearchParams(window.location.search);
-	const customSize = urlParams.get('size');
+  <!-- Settings Fensterchen -->
+  <div id="settings-panel">
+    <div id="settings-header">
+      <h3><span>🖐️</span> Wall Settings</h3>
+      <button class="close-btn" id="close-settings">&times;</button>
+    </div>
+    
+    <div class="setting-group">
+      <div class="setting-label-row">
+        <label for="set-color">Hintergrund</label>
+        <div class="color-picker-row">
+          <input type="text" id="hex-color" class="hex-input" value="#141D29" maxlength="7">
+          <input type="color" id="set-color" value="#141D29">
+        </div>
+      </div>
+    </div>
 
-	// Wenn 'size' in der URL angegeben ist, überschreiben wir die CSS-Variable
-	if (customSize) {
-	  document.documentElement.style.setProperty('--ticket-height', `${customSize}px`);
-	}
-	  
-  
-  
+    <div class="setting-group">
+      <div class="setting-label-row">
+        <label for="set-size">Ticket Größe (px)</label>
+        <input type="number" id="num-size" class="num-input" value="230" min="50" max="600">
+      </div>
+      <input type="range" id="set-size" min="50" max="600" value="230">
+    </div>
+
+    <div class="setting-group">
+      <div class="setting-label-row">
+        <label for="set-pad-top">Padding Oben (px)</label>
+        <input type="number" id="num-pad-top" class="num-input" value="40" min="0" max="400">
+      </div>
+      <input type="range" id="set-pad-top" min="0" max="400" value="40">
+    </div>
+
+    <div class="setting-group">
+      <div class="setting-label-row">
+        <label for="set-pad-bottom">Padding Unten (px)</label>
+        <input type="number" id="num-pad-bottom" class="num-input" value="0" min="0" max="400">
+      </div>
+      <input type="range" id="set-pad-bottom" min="0" max="400" value="0">
+    </div>
+
+    <div class="setting-group">
+      <div class="setting-label-row">
+        <label for="set-pad-left">Padding Links (px)</label>
+        <input type="number" id="num-pad-left" class="num-input" value="110" min="0" max="400">
+      </div>
+      <input type="range" id="set-pad-left" min="0" max="400" value="110">
+    </div>
+
+    <div class="setting-group">
+      <div class="setting-label-row">
+        <label for="set-pad-right">Padding Rechts (px)</label>
+        <input type="number" id="num-pad-right" class="num-input" value="60" min="0" max="400">
+      </div>
+      <input type="range" id="set-pad-right" min="0" max="400" value="60">
+    </div>
+
+    <button id="reroll-btn" class="btn-action">Rotation 🎲</button>
+    <button id="download-btn" class="btn-action">📸 ALS BILD DOWNLOADEN</button>
+  </div>
+
+  <script>
+    // URL Parameter auslesen (?settings=true)
+    const urlParams = new URLSearchParams(window.location.search);
+    const showSettings = urlParams.get('settings') === 'true';
+
+    const panel = document.getElementById('settings-panel');
+    const header = document.getElementById('settings-header');
+    const closeBtn = document.getElementById('close-settings');
+    const downloadBtn = document.getElementById('download-btn');
+    const rerollBtn = document.getElementById('reroll-btn');
+
+    if (showSettings) {
+      panel.style.display = 'block';
+    }
+
+    closeBtn.addEventListener('click', () => {
+      panel.style.display = 'none';
+    });
+
+    // Drag & Drop Logik für das Fensterchen
+    let isDragging = false;
+    let currentX;
+    let currentY;
+    let initialX;
+    let initialY;
+    let xOffset = 0;
+    let yOffset = 0;
+
+    header.addEventListener('mousedown', dragStart);
+    document.addEventListener('mouseup', dragEnd);
+    document.addEventListener('mousemove', drag);
+
+    function dragStart(e) {
+      if (e.target === closeBtn) return;
+      initialX = e.clientX - xOffset;
+      initialY = e.clientY - yOffset;
+      isDragging = true;
+    }
+
+    function dragEnd() {
+      initialX = currentX;
+      initialY = currentY;
+      isDragging = false;
+    }
+
+    function drag(e) {
+      if (isDragging) {
+        e.preventDefault();
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+        xOffset = currentX;
+        yOffset = currentY;
+
+        panel.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+      }
+    }
+
+    // Synchronisation von Slider + Zahlenfeld
+    function bindSettingPair(sliderId, numId, cssVar) {
+      const slider = document.getElementById(sliderId);
+      const num = document.getElementById(numId);
+
+      function update(value) {
+        slider.value = value;
+        num.value = value;
+        document.documentElement.style.setProperty(cssVar, `${value}px`);
+      }
+
+      slider.addEventListener('input', (e) => update(e.target.value));
+      num.addEventListener('input', (e) => update(e.target.value));
+    }
+
+    bindSettingPair('set-size', 'num-size', '--ticket-height');
+    bindSettingPair('set-pad-top', 'num-pad-top', '--pad-top');
+    bindSettingPair('set-pad-bottom', 'num-pad-bottom', '--pad-bottom');
+    bindSettingPair('set-pad-left', 'num-pad-left', '--pad-left');
+    bindSettingPair('set-pad-right', 'num-pad-right', '--pad-right');
+
+    // Farbsteuerung (Color Picker + Hex Code)
+    const colorPicker = document.getElementById('set-color');
+    const hexInput = document.getElementById('hex-color');
+
+    function updateColor(val) {
+      document.documentElement.style.setProperty('--bg-color', val);
+      colorPicker.value = val;
+      hexInput.value = val.toUpperCase();
+    }
+
+    colorPicker.addEventListener('input', (e) => updateColor(e.target.value));
+    hexInput.addEventListener('input', (e) => {
+      let val = e.target.value;
+      if (!val.startsWith('#')) val = '#' + val;
+      if (/^#[0-9A-F]{6}$/i.test(val)) {
+        updateColor(val);
+      }
+    });
+
+    // Rotation der Tickets neu auswürfeln
+    function rerollRotations() {
+      const wrappers = document.querySelectorAll('.ticket-wrapper');
+      let lastRotation = 0;
+
+      wrappers.forEach((wrapper) => {
+        let randomTilt;
+        let attempts = 0;
+
+        do {
+          randomTilt = (Math.random() * 40) - 20;
+          attempts++;
+        } while (Math.abs(randomTilt - lastRotation) < 10 && attempts < 10);
+
+        lastRotation = randomTilt;
+        const totalRotation = -90 + randomTilt;
+
+        wrapper.style.transform = `rotate(${totalRotation.toFixed(1)}deg)`;
+      });
+    }
+
+    rerollBtn.addEventListener('click', rerollRotations);
+
+    // Präzise Berechnung aller rotierten Bounding-Boxes für Screenshot
+// Präzise Berechnung des gesamten Screens & Inhalts für den Screenshot
+    downloadBtn.addEventListener('click', async () => {
+      const originalText = downloadBtn.innerText;
+      downloadBtn.innerText = '⏳ Generiere Poster...';
+      
+      // Panel ausblenden
+      panel.style.display = 'none';
+
+      // Scrollbars kurz sichtbar machen & Body strecken, um echte Ausmaße zu bekommen
+      const originalBodyOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'visible';
+
+      // Wir ermitteln die exakte maximale Höhe & Breite (Window + gesamter Scroll-Bereich)
+      const fullWidth = Math.max(
+        document.documentElement.clientWidth,
+        document.body.scrollWidth,
+        document.documentElement.scrollWidth,
+        window.innerWidth
+      );
+      
+      const fullHeight = Math.max(
+        document.documentElement.clientHeight,
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        window.innerHeight
+      );
+
+      const currentBg = getComputedStyle(document.documentElement).getPropertyValue('--bg-color').trim() || '#EF3C3C';
+
+      try {
+        const canvas = await html2canvas(document.body, {
+          scale: 3, // Stramme 4K HD Qualität
+          useCORS: true,
+          backgroundColor: currentBg,
+          logging: false,
+          x: 0,
+          y: 0,
+          width: fullWidth,
+          height: fullHeight,
+          windowWidth: fullWidth,
+          windowHeight: fullHeight,
+          // Stellt sicher, dass das gesamte Root-Element vollständig gecaptured wird
+          onclone: (clonedDoc) => {
+            clonedDoc.body.style.height = fullHeight + 'px';
+            clonedDoc.body.style.width = fullWidth + 'px';
+          }
+        });
+
+        const link = document.createElement('a');
+        link.download = 'ticket-poster-hd.png';
+        link.href = canvas.toDataURL('image/png', 1.0);
+        link.click();
+      } catch (err) {
+        console.error('Fehler beim Screenshot:', err);
+        alert('Download fehlgeschlagen.');
+      } finally {
+        document.body.style.overflow = originalBodyOverflow;
+        panel.style.display = 'block';
+        downloadBtn.innerText = originalText;
+      }
+    });
+
     // GitHub API URL für deinen Ordner
     const apiUrl = "https://api.github.com/repos/derchopsuey/Rewind/contents/tickets";
     const rawBaseUrl = "https://derchopsuey.github.io/Rewind/tickets/";
 
-    // Regex zur Prüfung des Formats YYYY_MM_DD.jpg / png / webp
     const datePattern = /^\d{4}_\d{2}_\d{2}\.(jpg|jpeg|png|webp)$/i;
 
     async function loadTickets() {
@@ -114,11 +541,7 @@
         }
 
         const files = await response.json();
-
-        // Nur Dateien filtern, die dem Datums-Format entsprechen
         const ticketFiles = files.filter(file => datePattern.test(file.name));
-
-        // Sortieren nach Datum (ältestes zuerst)
         ticketFiles.sort((a, b) => a.name.localeCompare(b.name));
 
         loading.style.display = 'none';
@@ -127,36 +550,24 @@
           gallery.innerHTML = '<p>Keine passenden Ticket-Dateien gefunden.</p>';
           return;
         }
-		let lastRotation = 0; // Merkt sich die Neigung der vorherigen Karte
+
         ticketFiles.forEach((file, index) => {
           const wrapper = document.createElement('div');
           wrapper.className = 'ticket-wrapper';
-          
-          // Z-Index dynamisch erhöhen, damit spätere Bilder über den vorherigen liegen
           wrapper.style.zIndex = index + 1;
-
-		let randomTilt;
-		let attempts = 0;
-
-		do {
-		  randomTilt = (Math.random() * 40) - 20;
-		  attempts++;
-		} while (Math.abs(randomTilt - lastRotation) < 10 && attempts < 10);
-
-		lastRotation = randomTilt;
-		const totalRotation = -90 + randomTilt;
-
-          wrapper.style.transform = `rotate(${totalRotation.toFixed(1)}deg)`;
 
           const img = document.createElement('img');
           img.src = `${rawBaseUrl}${file.name}`;
           img.alt = `Konzertkarte ${file.name}`;
           img.className = 'ticket-img';
-          img.loading = 'lazy'; // Performantes Laden bei vielen Bildern
+          img.loading = 'lazy';
 
           wrapper.appendChild(img);
           gallery.appendChild(wrapper);
         });
+
+        // Nach dem Platzieren einmal würfeln
+        rerollRotations();
 
       } catch (error) {
         console.error(error);
