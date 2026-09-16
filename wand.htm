@@ -63,6 +63,29 @@
       /*border: 1px solid rgba(255, 255, 255, 0.1);   -- Helle Rahmen, weiß noch nicht wie geil das ist*/
     }
 
+    /* --- MOBILE OPTIMIERUNG (1 Ticket pro Reihe + Geringerer Höhen-Abstand) --- */
+    @media (max-width: 768px) {
+      body {
+        --pad-left: 0px;
+        --pad-right: 0px;
+      }
+
+      .ticket-container {
+        flex-direction: column; /* Erzwingt 1 Ticket pro Reihe untereinander */
+        align-items: center;
+        padding: 10px 0;
+        row-gap: 0px;
+      }
+
+      .ticket-wrapper {
+        margin-left: 0 !important;
+        /* Negativer Margin steuert den vertikalen Abstand. 
+           Je negativer die Zahl, desto enger rücken die Tickets zusammen! */
+        margin-top: -80px;
+        margin-bottom: -80px;
+      }
+    }
+
     .ticket-wrapper:hover {
       z-index: 9999 !important;
       transform: scale(2.15) rotate(-90deg) !important;
@@ -462,7 +485,7 @@
     rerollBtn.addEventListener('click', rerollRotations);
 
     // Präzise Berechnung aller rotierten Bounding-Boxes für Screenshot
-// Präzise Berechnung des gesamten Screens & Inhalts für den Screenshot
+    // Präzise Berechnung des gesamten Screens & Inhalts für den Screenshot
     downloadBtn.addEventListener('click', async () => {
       const originalText = downloadBtn.innerText;
       downloadBtn.innerText = '⏳ Generiere Poster...';
