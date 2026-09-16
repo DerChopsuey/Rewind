@@ -63,28 +63,35 @@
       /*border: 1px solid rgba(255, 255, 255, 0.1);   -- Helle Rahmen, weiß noch nicht wie geil das ist*/
     }
 
-    /* --- MOBILE OPTIMIERUNG (1 Ticket pro Reihe + Geringerer Höhen-Abstand) --- */
-    @media (max-width: 768px) {
-      body {
-        --pad-left: 0px;
-        --pad-right: 0px;
-      }
 
-      .ticket-container {
-        flex-direction: column; /* Erzwingt 1 Ticket pro Reihe untereinander */
-        align-items: center;
-        padding: 10px 0;
-        row-gap: 0px;
+  /* --- MOBILE OPTIMIERUNG --- */
+      @media (max-width: 768px) {
+        body {
+          --pad-left: 0px;
+          --pad-right: 0px;
+          /* Ticket-Höhe entspricht gedreht der Breite: 78vw füllt fast das ganze Display aus */
+          --ticket-height: 78vw; 
+        }
+  
+        .ticket-container {
+          flex-direction: column; /* 1 Ticket pro Reihe */
+          align-items: center;
+          padding: 10px 0;
+          row-gap: 0px;
+        }
+  
+        .ticket-wrapper {
+          margin-left: 0 !important;
+          /* Negativer Margin steuert den vertikalen Abstand */
+          margin-top: -120px;
+          margin-bottom: -120px;
+        }
+  
+        /* Hover/Klick-Zoom auf Mobile begrenzen, damit es nicht über den Rand ragt */
+        .ticket-wrapper:hover {
+          transform: scale(1.18) rotate(-90deg) !important;
+        }
       }
-
-      .ticket-wrapper {
-        margin-left: 0 !important;
-        /* Negativer Margin steuert den vertikalen Abstand. 
-           Je negativer die Zahl, desto enger rücken die Tickets zusammen! */
-        margin-top: -80px;
-        margin-bottom: -80px;
-      }
-    }
 
     .ticket-wrapper:hover {
       z-index: 9999 !important;
